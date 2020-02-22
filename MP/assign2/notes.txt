@@ -1,0 +1,29 @@
+String Instruction Basics
+
+    Source DS:SI, Destination ES:DI
+        You must ensure DS and ES are correct
+        You must ensure SI and DI are offsets into DS and ES respectively
+    Direction Flag (0 = Up, 1 = Down)
+        CLD - Increment addresses (left to right)
+        STD - Decrement addresses (right to left)
+
+The Direction Flag
+
+    One of the control flags in the FLAGS register is the direction flag (DF)
+    It determines the direction in which string operations will proceed
+    The string operations are implemented by the two index registers SI and DI
+    If DF = 0, SI and DI proceed in the direction of increasing memory addresses
+    If DF = 1, they proceed in decreasing direction
+
+CLD and STD
+
+    To make DF = 0, use the cld instruction
+
+cld     ;clear direction flag
+
+    To make DF = 1, use the std instruction
+
+std     ;set direction flag
+
+    cld and std have no effect on the other flags
+
