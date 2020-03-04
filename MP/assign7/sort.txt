@@ -1,0 +1,5 @@
+94261
+The sorted array in ascending order is
+12469
+The sorted array in descending order is
+96421
