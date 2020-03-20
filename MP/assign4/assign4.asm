@@ -15,15 +15,17 @@ syscall
 %endmacro
 
 section .data
-msg1: db "1.BCD->HEX",0xA
-      db "2.HEX->BCD",0xA
+msg1: db "1.Successive addition",0xA
+      db "2.Add and Shift Method.",0xA
       db "3.EXIT", 0xA
 len1 equ $-msg1
 
 section .bss
 opt resb 06
 val resb 10
-result resb 40
+a resb 10
+b resb 10
+result resb 10
 cnt resb 01
 cnt2 resb 01
 
@@ -36,58 +38,59 @@ menu:
 	read opt,2
 
 	cmp byte[opt],'1'
-	je B_H
+	je S_A
 
-	cmp byte[opt],'2'
-	je H_B
+	;cmp byte[opt],'2'
+	;je H_B
 	
 
-B_H :	
-	read val,6
+S_A :	read val,05
+	call AtoH
+	mov [a],bx
 	
-	xor rax,rax
-	mov rsi,val
-	
-	mov rbx,0xA
-	mov rcx,5H
-l1:	
-	
-	mul rbx
-	xor rdx,rdx
-	mov dl,byte[rsi]
-	sub dl,30H
-	add rax,rdx
-	inc rsi
-	loop l1
-	
-	mov rdx,rax
-	call HtoA
-	call exit
-H_B: 
+	xor rbx,rbx
 	read val,05
 	call AtoH
-	
-	mov ax,bx
-	mov byte[cnt], 00
-	mov bx,10
-	
-	
-l2:	xor rdx,rdx	
-	div bx
-	push rdx
-	inc byte[cnt]
-	cmp ax,00
-	jne l2
-	mov rdi,result
+	mov [b],rbx
+	xor rax,rax
+	;mov ax,word[a]
+	xor rcx,rcx
+	mov rcx,[b]
 
-l3:   	pop rdx
-	add dl,30H
-	mov qword[rdi],rdx
-	inc rdi
-	dec byte[cnt]
-	jnz l3
+l1:	add ax,word[a]
+	loop l1
 	
-	print result, 5
+	xor rdx,rdx
+	mov dx,ax
+	call HtoA
+	call exit
+
+add_shift: read val,03
+	   	call AtoH	
+	mov [a],bx
+	
+	read val,03
+	call AtoH
+	mov [b],bx
+	
+	xor rbx,rbx
+	xor rcx,rcx
+	mov bl,[a]
+	mov cl,[b]
+	xor rax,rax
+	mov byte[cnt],08H
+	
+l2: 	shl bl,1
+	jnc l3
+	add rax,rcx
+	
+l3: 	shl rax,1
+	dec byte[cnt]
+	jnz l2
+	
+	xor rdx,rdx
+	mov rdx,rax
+	call HtoA
 
 exit:
 mov rax,60
@@ -96,10 +99,10 @@ syscall
 
 HtoA:
 	mov rdi, result
-	mov byte[cnt2], 04	
+	mov byte[cnt2], 4	
 	
 up1:
-	rol dx, 04
+	rol dx, 4
 	mov cl, dl
 	AND cl, 0FH
 	cmp cl, 09H

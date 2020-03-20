@@ -1,0 +1,44 @@
+
+.model tiny
+.code
+ORG 
+
+start:
+
+	
+	save dd ?
+	jmp Init
+	
+	
+residential:
+	msg db "print"
+	push dx
+	push bx
+	push cx
+	push ax
+	
+	
+	;write code to display
+	
+	msg1 db "Anwser"
+	pop dx
+	
+	
+	
+Init:
+	push cs
+	pop ds
+	mov ah,35h
+	mov al,00
+	int 21h
+	
+	mov word ptr[save],bx
+	mov word ptr[save+2],es
+	mov ah,25h
+	mov al,00
+	lea dx,residential
+	int 21h
+	mov ah,31h
+	lea dx,Init
+	int 21h
+	end Init
