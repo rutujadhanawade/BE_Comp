@@ -40,6 +40,8 @@ menu:
 
 	cmp byte[opt],'2'
 	je H_B
+	cmp byte[opt],'3'
+	je exit
 	
 
 B_H :	
@@ -62,7 +64,7 @@ l1:
 	
 	mov rdx,rax
 	call HtoA
-	call exit
+	jmp menu
 H_B: 
 	read val,05
 	call AtoH
@@ -88,7 +90,7 @@ l3:   	pop rdx
 	jnz l3
 	
 	print result, 5
-
+	jmp menu
 exit:
 mov rax,60
 mov rdi,60

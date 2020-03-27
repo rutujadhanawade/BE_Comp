@@ -1,143 +1,216 @@
-%macro print 2
-mov rax,01
-mov rdi,01
-mov rsi,%1
-mov rdx,%2
-syscall
-%endmacro
+;-------------------------macro for printing and reading data----------------------
 
-%macro read 2
-mov rax,00
-mov rdi,00
-mov rsi,%1
-mov rdx,%2
-syscall
-%endmacro
+	%macro print 2
+	mov rax,1
+	mov rdi,0
+	mov rsi,%1
+	mov rdx,%2
+	syscall
+	%endmacro
+	
+	%macro read 2
+	mov rax,0
+	mov rdi,1
+	mov rsi,%1
+	mov rdx,%2
+	syscall
+	%endmacro
+	
+	
 
 section .data
-msg1: db "1.Successive addition",0xA
-      db "2.Add and Shift Method.",0xA
-      db "3.EXIT", 0xA
+
+menu db "Enter choice:",10
+db "1 for SUCCESSIVE ADDITION ",10
+db "2 for ADD AND SHIFT",10
+db "3 for EXIT",10
+menulen equ $-menu
+
+msg1 db "Enter first number",10
 len1 equ $-msg1
 
-section .bss
-opt resb 06
-val resb 10
-a resb 10
-b resb 10
-result resb 10
-cnt resb 01
-cnt2 resb 01
+msg2 db "Enter second number",10
+len2 equ $-msg2
 
-section .text
+msg3 db "The result of multiplication is",10
+len3 equ $-msg3
+
+newline db 10
+cnt db 00
+count db 00
+
+
+section .bss
+
+choice resb 2
+num1 resb 2
+num2 resb 2
+result resb 8
+
+
+
+section .data
+
 global _start
+
 _start:
 
-menu:
+;------------------menu-----------------
+	main:
+	
+	print menu,menulen
+	read choice,3
+
+	cmp byte[choice],31h
+	je SUCC_ADD
+	
+
+	cmp byte[choice],32h
+	je ADD_SHIFT
+	
+
+	cmp byte[choice],33h
+	jae EXIT
+;---------------------accept two numbers--------------
+
+	SUCC_ADD:
+	
 	print msg1,len1
-	read opt,2
-
-	cmp byte[opt],'1'
-	je S_A
-
-	;cmp byte[opt],'2'
-	;je H_B
+	read num1,3
+	mov rsi,num1
+	call atoh
+	mov byte[num1],bl
 	
-
-S_A :	read val,05
-	call AtoH
-	mov [a],bx
+	print newline,1
 	
-	xor rbx,rbx
-	read val,05
-	call AtoH
-	mov [b],rbx
-	xor rax,rax
-	;mov ax,word[a]
+	print msg2,len2
+	read num2,3
+	mov rsi,num2
+	call atoh
 	xor rcx,rcx
-	mov rcx,[b]
+	mov cl,bl
 
-l1:	add ax,word[a]
-	loop l1
-	
-	xor rdx,rdx
-	mov dx,ax
-	call HtoA
-	call exit
 
-add_shift: read val,03
-	   	call AtoH	
-	mov [a],bx
-	
-	read val,03
-	call AtoH
-	mov [b],bx
-	
 	xor rbx,rbx
-	xor rcx,rcx
-	mov bl,[a]
-	mov cl,[b]
+	mov bl,byte[num1]
 	xor rax,rax
-	mov byte[cnt],08H
+	mul1:
+	cmp cl,0
+	je label
+	add rax,rbx
+	loop mul1
 	
-l2: 	shl bl,1
-	jnc l3
-	add rax,rcx
-	
-l3: 	shl rax,1
-	dec byte[cnt]
-	jnz l2
-	
+	label:
 	xor rdx,rdx
 	mov rdx,rax
-	call HtoA
-
-exit:
-mov rax,60
-mov rdi,60
-syscall
-
-HtoA:
-	mov rdi, result
-	mov byte[cnt2], 4	
 	
-up1:
-	rol dx, 4
-	mov cl, dl
-	AND cl, 0FH
-	cmp cl, 09H
-	jbe next1
-	add cl, 07H
-next1:
-	add cl, 30H
+	call hta
+
+	print msg3,len3
+	print result,4h
+	print newline,1
 	
-	mov byte[rdi], cl
-	inc rdi
-	dec byte[cnt2]
-	jnz up1
-		
-	print result,4
+	jmp main
+	
+;--------------------------add and shift-------------------
 
-RET
+	ADD_SHIFT:
+	
+	print msg1,len1
+	read num1,3
+	mov rsi,num1
+	call atoh
+	mov byte[num1],bl
 
-AtoH:
-	mov rsi,val
-	mov byte[cnt2],4
+	
+	print newline,1
+	
+	print msg2,len2
+	read num2,3	
+	mov rsi,num2
+	call atoh
+	mov byte[num2],bl
+	
 	xor rbx,rbx
-up2:  
-	rol bx,4
+	xor rcx,rcx
+	mov bl,byte[num1]
+	mov cl,byte[num2]
+	mov byte[count],8h
+	xor rax,rax
+	
+	mul2:
+	shl bl,1
+	jnc up1
+	
+	add rax,rcx
+	
+	up1:
+	shl rax,1
+	dec byte[count]
+	jnz mul2
+	
+	sar rax,1
+	call hta
+	
+	print msg3,len3
+	print result,4h
+	print newline,1
+	
+	jmp main
+	
+	
+	
+;---------------exit--------------------
+
+	EXIT:
+	mov rax,60
+	mov rdi,0h
+	syscall
+
+;-------------------ascii to hex--------------
+
+	atoh:
+	mov byte[cnt],2h
+	xor ax,ax
+	xor bx,bx
+	
+	hex:
+	rol bl,4h
 	mov al,byte[rsi]
-	cmp al,39H
-	jbe next2
-	sub al,07H
+	cmp al,39h
+	jbe next
 	
-next2:
-	sub al,30H
-	add bx,ax
+	sub al,7h
+	
+	next:
+	sub al,30h
+	add bl,al
 	inc rsi
-	dec byte[cnt2]
-	jnz up2
+	dec byte[cnt]
+	jnz hex
+
+	ret
 	
-RET
+;-----------------------hex to ascii--------------------	
+	hta:
+	mov rdi,result
+	mov byte[cnt],4h
+	
+	l1:
+	rol ax,4
+	mov bl,al
+	and bl,0Fh
+	cmp bl,9h
+	jbe l2
+	add bl,7h
+	
+	l2:
+	add bl,30h
+	mov byte[rdi],bl
 
+	inc rdi
+	dec byte[cnt]
+	jnz l1
 
+	ret
+	

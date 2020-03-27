@@ -1,3 +1,4 @@
+;-------------------------macro for printing and reading data----------------------
 
 	%macro print 2
 	mov rax,1
@@ -13,7 +14,8 @@
 	mov rsi,%1
 	mov rdx,%2
 	syscall
-	%endmacro 
+	%endmacro
+;------------------------------------------------------
 
 section .data
 
@@ -26,7 +28,7 @@ len1 equ $-msg1
 section .bss
 
 num resb 2
-factorial resb 10
+factorial resb 4
 cnth resb 2
 n1 resb 2
 var resb 8
@@ -39,7 +41,6 @@ global _start
 	
 	pop rbx
 	pop rbx
-	xor rbx,rbx
 	pop rbx
 	
 	mov rsi,num
@@ -47,10 +48,10 @@ global _start
 	label:
 	mov al,byte[rbx]
 	mov byte[rsi],al
-	;inc rsi
-	;inc rbx
-	;cmp byte[rbx],0
-	;jnz label
+	inc rsi
+	inc rbx
+	cmp byte[rbx],0
+	jnz label
 	
 	print msg,len
 	print num,2
@@ -68,13 +69,17 @@ global _start
 	call hta
 	
 	print msg1,len1
-	print factorial,8
+	print factorial,4
 	
+	;---------------exit-------------------
 	exit:
 	mov rax,60
 	mov rdx,0h
 	syscall
 
+	
+	
+	;------------------counting factorial-------------
 	
 	fact:
 	mov qword[var],rcx
@@ -95,14 +100,14 @@ global _start
 	mov rcx,1
 	ret
 	
-
+	;----------------hex to ascii----------------
 	
 	hta:
 	mov rdi,factorial
-	mov byte[cnth],8H
+	mov byte[cnth],4h
 	
 	l2:
-	rol rax,4
+	rol ax,4
 	mov bl,al
 	and bl,0Fh
 	cmp bl,9h
@@ -119,7 +124,7 @@ global _start
 	
 	ret
 	
-
+	;----------------ascii to hex-------------------
 
 	atoh:
 	
