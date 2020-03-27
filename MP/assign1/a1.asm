@@ -10,8 +10,10 @@
 section .data
 msg1 db "positive numbers are:"
 len1 equ $ -msg1
-msg2 db "negative numbers :",0xA
+msg2 db "negative numbers :"
 len2 equ $ -msg2
+newl db 0xA
+len3 equ $ -newl
 
 arr dq 0x999A,0xFFFFFFFFFFFFFFFF,0x0ff1,0xB23456789023456A,0xB23456789023456A
 pos: db 00h
@@ -46,6 +48,7 @@ up2:
 
 	print msg1,len1
 	print pos,1
+	print newl,len3
 	print msg2,len2
 	print neg,1
 

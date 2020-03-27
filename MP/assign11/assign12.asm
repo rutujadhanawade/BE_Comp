@@ -13,6 +13,7 @@
 	mov rdx,%2
 	syscall
 	%endmacro
+;------------------------------------------------------
 
 section .data
 
@@ -51,20 +52,9 @@ section .text
 	
 	mov word[hundred],100
 	mov word[cnt],05h
-	
+	;-----------------------mean-------------------
 	
 	MEAN:
-	mov rcx,05H
-	mov rsi,arr
-	finit
-	fldz
-	
-	label:
-	fadd dword[rsi]
-	add rsi,4
-	loop lable
-	
-
 	mov rcx,05h
 	mov rsi,arr
 	finit
@@ -82,7 +72,7 @@ section .text
 	print msg,len
 	call disp
 	
-	
+	;-----------------variance-----------------------
 	
 	VARIANCE:
 	mov rcx,05h
@@ -108,6 +98,8 @@ section .text
 	print msg1,len1
 	call disp
 	
+	;------------------standard deviation--------------
+	
 	STD_DEV:
 	fldz
 	fld dword[variance]
@@ -118,7 +110,7 @@ section .text
 	call disp
 	print newline,1
 	
-
+	;-------------exit------------------------------
 	
 	EXIT:
 	mov rax,60
@@ -126,7 +118,7 @@ section .text
 	syscall
 	
 	
-
+	;--------------------display procedure--------------
 	
 	disp:
 	
@@ -156,7 +148,7 @@ section .text
 	ret
 		
 	
-
+	;------------------hex to ascii---------------
 	
 	hta:
 	mov rdi,display
