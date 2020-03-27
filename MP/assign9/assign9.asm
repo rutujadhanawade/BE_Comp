@@ -82,13 +82,14 @@ global _start
 	;------------------counting factorial-------------
 	
 	fact:
-	mov qword[var],rcx
+	;mov qword[var],rcx
 	cmp rcx,0
 	je l1
-	
+	c:
 	push rcx
-	dec qword[var]
-	mov rcx,qword[var]
+	dec rcx
+	;dec qword[var]
+	;mov rcx,qword[var]
 	call fact
 	
 	pop rax
