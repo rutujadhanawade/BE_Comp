@@ -81,9 +81,9 @@ void MainWindow::dda(int x1, int y1, int x2, int y2){
        }
 }
 
-void MainWindow::on_pushButton_clicked(){
-    color = QColorDialog::getColor();
-}
+//void MainWindow::on_pushButton_clicked(){
+//    color = QColorDialog::getColor();
+//}
 
 void MainWindow::on_pushButton_2_clicked(){
     vertices=0;
